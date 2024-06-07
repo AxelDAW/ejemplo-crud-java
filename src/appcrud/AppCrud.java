@@ -3,9 +3,21 @@ package appcrud;
 import java.sql.*;
 import java.util.Scanner;
 
+/**
+ * Esta clase representa una aplicación CRUD para interactuar con una base de datos PostgreSQL.
+ * Realiza operaciones como insertar, consultar, actualizar y eliminar registros en una tabla específica.
+ * También puede realizar consultas ordenadas y combinadas.
+ * 
+ * @author Axel
+ */
+
 public class AppCrud {
 
     static Connection conexion;
+    /**
+     * Método principal que inicia la aplicación CRUD.
+     * @param args Argumentos de línea de comandos.
+     */
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
@@ -86,20 +98,41 @@ public class AppCrud {
 
     }
 
+    /**
+     * Inserta un registro en la tabla 'cubiculo'.
+     * @param id El ID del cubículo.
+     * @param nombre El nombre del cubículo.
+     * @param estado El estado del cubículo.
+     * @param area El área del cubículo.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void insertarRegistro(int id, String nombre, String estado, String area) throws SQLException{
+        // Preparar la sentencia SQL para insertar un registro
         PreparedStatement sentencia = conexion.prepareStatement("INSERT INTO cubiculo VALUES (?,?,?,?)");
 
+        // Establecer los parámetros de la sentencia
         sentencia.setInt(1, id);
         sentencia.setString(2, nombre);
         sentencia.setString(3, estado.toUpperCase());
         sentencia.setString(4, area);
+
+        // Ejecutar la sentencia
         sentencia.executeUpdate();
         sentencia.close();
     }
+
+    /**
+     * Muestra todos los registros de la tabla 'cubiculo', limitando a los primeros 7.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void traerTodo() throws SQLException{
+        // Crear una sentencia para ejecutar la consulta
         Statement sentencia = conexion.createStatement();
+
+        // Ejecutar la consulta y obtener los resultados
         ResultSet rs = sentencia.executeQuery("SELECT * FROM cubiculo LIMIT 7");
-        
+
+        // Recorrer los resultados y mostrar cada registro
         while(rs.next()){
             int id  = rs.getInt("id");
             String nombre = rs.getString("nombre");
@@ -109,11 +142,21 @@ public class AppCrud {
         }
         sentencia.close();
     }
+
+    /**
+     * Busca un registro en la tabla 'cubiculo' por ID.
+     * @param codigo El ID del cubículo a buscar.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void buscarPorId(int codigo) throws SQLException{
+        // Preparar la sentencia SQL para buscar un registro por ID
         PreparedStatement sentencia = conexion.prepareStatement("SELECT * FROM cubiculo WHERE id = ?");
         sentencia.setInt(1, codigo);
-        ResultSet rs = sentencia.executeQuery();
         
+        // Ejecutar la consulta y obtener los resultados
+        ResultSet rs = sentencia.executeQuery();
+
+        // Recorrer los resultados y mostrar el registro encontrado
         while (rs.next()) {
             int id  = rs.getInt("id");
             String nombre = rs.getString("nombre");
@@ -123,28 +166,59 @@ public class AppCrud {
         }
         sentencia.close();
     }
+
+    /**
+     * Actualiza un registro en la tabla 'cubiculo' por ID.
+     * @param id El ID del cubículo a actualizar.
+     * @param nuevoNombre El nuevo nombre del cubículo.
+     * @param nuevoEstado El nuevo estado del cubículo.
+     * @param nuevaArea El nuevo área del cubículo.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void actualizarRegistro(int id, String nuevoNombre, String nuevoEstado, String nuevaArea) throws SQLException7
     {
+        // Preparar la sentencia SQL para actualizar un registro
         PreparedStatement sentencia = conexion.prepareStatement("UPDATE cubiculo SET nombre = ?, estado = ?, area = ? WHERE id = ?");
+
+        // Establecer los parámetros de la sentencia
         sentencia.setInt(4, id);
         sentencia.setString(1, nuevoNombre);
         sentencia.setString(2, nuevoEstado.toUpperCase());
         sentencia.setString(3, nuevaArea);
-        
+
+        // Ejecutar la sentencia
         sentencia.executeUpdate();
         sentencia.close();
         
     }
+
+    /**
+     * Elimina un registro en la tabla 'cubiculo' por ID.
+     * @param id El ID del cubículo a eliminar.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void eliminarRegistro(int id) throws SQLException{
+        // Preparar la sentencia SQL para eliminar un registro
         PreparedStatement sentencia = conexion.prepareStatement("DELETE FROM cubiculo WHERE id = ?");
         sentencia.setInt(1, id);
+
+        // Ejecutar la sentencia
         sentencia.executeUpdate();
         sentencia.close();
     }
+
+    /**
+     * Consulta y muestra los registros de la tabla 'vehiculo' en orden ascendente por color.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void consultarEnOrdenAscendente() throws SQLException{
+        // Crear una sentencia para ejecutar la consulta
         Statement sentencia = conexion.createStatement();
+
+        // Ejecutar la consulta y obtener los resultados
         ResultSet rs = sentencia.executeQuery("SELECT * FROM vehiculo ORDER BY color ASC");
-        
+
+        // Recorrer los resultados y mostrar cada registro
         while(rs.next()){
             String matricula  = rs.getString("matricula");
             String planta = rs.getString("planta");
@@ -157,10 +231,19 @@ public class AppCrud {
         }
         sentencia.close();
     }
+
+    /**
+     * Realiza una consulta combinada entre las tablas 'vehiculo' y 'cliente' usando INNER JOIN.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     private static void consultaInnerJoin() throws SQLException{
+        // Crear una sentencia para ejecutar la consulta combinada
         Statement sentencia = conexion.createStatement();
+
+        // Ejecutar la consulta y obtener los resultados
         ResultSet rs = sentencia.executeQuery("SELECT * FROM vehiculo INNER JOIN cliente ON vehiculo.cliente = cliente.num_identificacion");
-        
+
+        // Recorrer los resultados y mostrar cada registro
         while(rs.next()){
             String matricula  = rs.getString("matricula");
             String planta = rs.getString("planta");
